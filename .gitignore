@@ -1,0 +1,6 @@
+.vs/
+MonoEntities/bin/
+MonoEntities/obj/
+packages/
+Tests/bin/
+Tests/obj/
