@@ -71,7 +71,7 @@
     <Compile Include="EntityTemplate.cs" />
     <Compile Include="EntityTemplateAttribute.cs" />
     <Compile Include="Tree\EntityTree.cs" />
-    <Compile Include="INotifyPropertyChanedExtended.cs" />
+    <Compile Include="INotifyPropertyChangedExtended.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
