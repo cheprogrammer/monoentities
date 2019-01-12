@@ -15,15 +15,16 @@ namespace MonoEntities
 
         public object Tag { get; set; } = null;
 
-        public bool IsInHierarchy { get; internal set; }
-
-        public bool Enabled { get; set; } = true;
 
         internal bool Started { get; set; } = false;
 
+        public bool Enabled { get; set; } = true;
+
+        public bool EnabledInHierarchy => (Transform.Parent?.Entity.EnabledInHierarchy ?? Enabled) && Enabled;
+
         internal bool MarkedToBeRemoved { get; set; } = false;
 
-        internal bool Processable => Started && Enabled && !MarkedToBeRemoved;
+        internal bool Processable => Started && Enabled && EnabledInHierarchy && !MarkedToBeRemoved;
 
 
         internal ComponentCollection Components { get; } = new ComponentCollection();
@@ -31,6 +32,7 @@ namespace MonoEntities
         internal EcsService Service { get; }
         
         public Transform2DComponent Transform { get; internal set; }
+
 
         internal Entity(EcsService service)
         {
@@ -72,7 +74,7 @@ namespace MonoEntities
 
         public void Destroy()
         {
-            Service.DestroyEntityAndChildren(this);
+            Service.Destroy(this);
         }
 
         #region Components Searching

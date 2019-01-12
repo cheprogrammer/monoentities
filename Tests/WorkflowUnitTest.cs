@@ -114,10 +114,7 @@ namespace Tests
             Assert.That(componentB.IsUpdated);
             Assert.That(componentB.IsDestroyed);
 
-            Assert.That(!entity.IsInHierarchy);
-
-            Assert.That(service.Tree.Count(), Is.EqualTo(1));
-            Assert.That(service.Tree.First(), Is.EqualTo(service.Tree));
+            Assert.That(service.Tree.Count(), Is.EqualTo(0));
         }
 
         [Test]
@@ -140,10 +137,8 @@ namespace Tests
 
             Assert.That(componentA.IsDestroyed);
             Assert.That(componentB.IsDestroyed);
-            Assert.That(!entity.IsInHierarchy);
 
-            Assert.That(service.Tree.Count(), Is.EqualTo(1));
-            Assert.That(service.Tree.First(), Is.EqualTo(service.Tree));
+            Assert.That(service.Tree.Count(), Is.EqualTo(0));
         }
 
         [Test]
@@ -164,14 +159,10 @@ namespace Tests
 
             service.Update(new GameTime());
 
-            Assert.That(!entityParent.IsInHierarchy);
-            Assert.That(!entityChild.IsInHierarchy);
-
             Assert.That(parentComponent.IsDestroyed);
             Assert.That(childComponent.IsDestroyed);
 
-            Assert.That(service.Tree.Count(), Is.EqualTo(1));
-            Assert.That(service.Tree.First(), Is.EqualTo(service.Tree));
+            Assert.That(service.Tree.Count(), Is.EqualTo(0));
         }
 
         [Test]
@@ -190,14 +181,10 @@ namespace Tests
 
             service.Update(new GameTime());
 
-            Assert.That(!entityParent.IsInHierarchy);
-            Assert.That(!entityChild.IsInHierarchy);
-
             Assert.That(parentComponent.IsDestroyed);
             Assert.That(childComponent.IsDestroyed);
 
-            Assert.That(service.Tree.Count(), Is.EqualTo(1));
-            Assert.That(service.Tree.First(), Is.EqualTo(service.Tree));
+            Assert.That(service.Tree.Count(), Is.EqualTo(0));
         }
     }
 }

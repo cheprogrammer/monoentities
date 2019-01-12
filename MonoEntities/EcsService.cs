@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework;
 using MonoEntities.Components;
 using MonoEntities.Tree;
 using NLog;
-using NLog.Fluent;
 
 namespace MonoEntities
 {
@@ -33,9 +32,11 @@ namespace MonoEntities
 
         private readonly Queue<Component> _componentsForRemoving = new Queue<Component>();
 
-        private readonly Queue<TransformPropertyChangedRequest> _transformChangeRequests = new Queue<TransformPropertyChangedRequest>();
+        private readonly List<Entity> _entities = new List<Entity>(128);
 
         private readonly Dictionary<Type, List<Component>> _componentsCache = new Dictionary<Type, List<Component>>();
+
+        internal bool IsDrawing { get; set; } = false;
 
         internal EcsService(IEnumerable<Type> availableTemplates)
         {
@@ -71,37 +72,23 @@ namespace MonoEntities
             ProcessEntitiesForAdding();
             ProcessComponentForAdding();
 
-            foreach (EntityNode entityNode in Tree.ChildNodes)
+            foreach (Entity entity in _entities)
             {
-                UpdateNode(entityNode, gameTime);
-            }
+                if (!entity.Processable)
+                    continue;
 
-            ProcessTransformChanges();
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < entity.Components.Count; i++)
+                {
+                    var entityComponent = entity.Components[i];
+
+                    if (entityComponent.Processable)
+                        entityComponent.Update(gameTime);
+                }
+            }
 
             ProcessEntitiesForRemoving();
             ProcessComponentsForRemoving();
-        }
-
-        private void UpdateNode(EntityNode node, GameTime gameTime)
-        {
-            var entity = node.Entity;
-
-            if (!entity.Processable)
-                return;
-
-            // ReSharper disable once ForCanBeConvertedToForeach
-            for (int i = 0; i < entity.Components.Count; i++)
-            {
-                Component entityComponent = entity.Components[i];
-
-                if (entityComponent.Processable)
-                    entityComponent.Update(gameTime);
-            }
-
-            foreach (EntityNode childNode in node.ChildNodes)
-            {
-                UpdateNode(childNode, gameTime);
-            }
         }
 
         /// <summary>
@@ -110,10 +97,14 @@ namespace MonoEntities
         /// <param name="gameTime"></param>
         public void Draw(GameTime gameTime)
         {
+            IsDrawing = true;
+
             foreach (EntityNode entityNode in Tree.ChildNodes)
             {
                 DrawNode(entityNode, gameTime);
             }
+
+            IsDrawing = false;
         }
 
         private void DrawNode(EntityNode node, GameTime gameTime)
@@ -123,16 +114,23 @@ namespace MonoEntities
             if (!entity.Processable)
                 return;
 
+            // Draw child first
             foreach (EntityNode childNode in node.ChildNodes)
             {
                 DrawNode(childNode, gameTime);
             }
 
+            if (!entity.Processable)
+                return;
+
+            // After arr children, draw current entity
             // ReSharper disable once ForCanBeConvertedToForeach
-            for (int i = 0; i < entity.Components.Count; i++)
+            for (var i = 0; i < entity.Components.Count; i++)
             {
-                Component entityComponent = entity.Components[i];
-                entityComponent.Draw(gameTime);
+                var entityComponent = entity.Components[i];
+
+                if(entityComponent.Processable)
+                    entityComponent.Draw(gameTime);
             }
         }
 
@@ -219,36 +217,25 @@ namespace MonoEntities
             Transform2DComponent transform = (Transform2DComponent)AddComponent(entity, typeof(Transform2DComponent));
             entity.Transform = transform;
 
+            if (!IsDrawing)
+                Tree.AddEntity(entity);
+
             _entitiesForAdding.Enqueue(entity);
 
             return entity;
         }
 
-        internal void DestroyEntityAndChildren(Entity entity)
+        internal void Destroy(Entity entity)
         {
-            if (entity.IsInHierarchy)
+            foreach (EntityNode entityNode in Tree.FindNode(entity).Reverse())
             {
-                EntityNode node = Tree.FindNode(entity);
-                DestroyNode(node);
+                DestroyEntity(entityNode.Entity);
             }
-            else
-            {
-                DestroyEntity(entity);
-            }
-        }
-
-        private void DestroyNode(EntityNode node)
-        {
-            foreach (var childNode in node.ChildNodes)
-            {
-                DestroyNode(childNode);
-            }
-
-            DestroyEntity(node.Entity);
         }
 
         private void DestroyEntity(Entity entity)
         {
+            entity.Enabled = false;
             entity.MarkedToBeRemoved = true;
 
             for (int i = entity.Components.Count - 1; i >= 0; i--)
@@ -256,6 +243,9 @@ namespace MonoEntities
                 Component component = entity.Components[i];
                 RemoveComponent(entity, component.GetType());
             }
+
+            if (!IsDrawing)
+                Tree.RemoveEntity(entity);
 
             _entitiesForRemoving.Enqueue(entity);
         }
@@ -290,7 +280,8 @@ namespace MonoEntities
         {
             if (entity.Components.TryGetValue(componentType, out var result))
             {
-                return result;
+                if(!result.MarkedToBeRemoved)
+                    return result;
             }
 
             return null;
@@ -309,7 +300,7 @@ namespace MonoEntities
         {
             if (_componentsCache.TryGetValue(componentType, out var result))
             {
-                return result;
+                return result.Where(e => !e.MarkedToBeRemoved).ToList();
             }
 
             return new Component[0];
@@ -356,8 +347,6 @@ namespace MonoEntities
 
         internal Component GetComponentInChild(Entity entity, Type componentType)
         {
-            if(!entity.IsInHierarchy)
-                throw new Exception($"Cannot find component of type \"{componentType.Name}\" in child: Entity \"{entity}\" is not in hierarchy.");
 
             EntityNode node = Tree.FindNode(entity);
 
@@ -374,9 +363,6 @@ namespace MonoEntities
 
         internal IEnumerable<Component> GetComponentsInChild(Entity entity, Type componentType)
         {
-            if (!entity.IsInHierarchy)
-                throw new Exception($"Cannot find component of type \"{componentType.Name}\" in child: Entity \"{entity}\" is not in hierarchy.");
-
             EntityNode node = Tree.FindNode(entity);
             List<Component> result = new List<Component>();
 
@@ -404,19 +390,25 @@ namespace MonoEntities
                 if (entity.MarkedToBeRemoved)
                     continue;
 
-                if (Tree.AddEntity(entity))
-                {
-                    entity.Started = true;
-                    entity.IsInHierarchy = true;
+                if (!Tree.EntityExists(entity)) // entity was added during draw stage
+                    Tree.AddEntity(entity);
 
-                    entity.Transform.PropertyChanged += TransformOnPropertyChanged;
-                }
-                else
-                {
-                    // if entity was not added to tree - that means that parent node was destroyed before it was registered in hierarchy
-                    // necessary to destory this entity as entity
-                    DestroyEntity(entity);
-                }
+                _entities.Add(entity);
+                entity.Started = true;
+            }
+        }
+
+        private void ProcessEntitiesForRemoving()
+        {
+            while (_entitiesForRemoving.Count != 0)
+            {
+                Entity entity = _entitiesForRemoving.Dequeue();
+
+                if(Tree.EntityExists(entity))
+                    Tree.RemoveEntity(entity);
+
+                _entities.Remove(entity);
+                _freeIds.Enqueue(entity.Id);
             }
         }
 
@@ -429,31 +421,10 @@ namespace MonoEntities
                 if (component.MarkedToBeRemoved)
                     continue;
 
-                component.Started = true;
                 component.Start();
+                component.Started = true;
 
-                if (component.Enabled)
-                    component.OnEnable();
-                else
-                    component.OnDisable();
-            }
-        }
-
-        private void ProcessEntitiesForRemoving()
-        {
-            while (_entitiesForRemoving.Count != 0)
-            {
-                Entity entity = _entitiesForRemoving.Dequeue();
-
-                if (entity.Started)
-                {
-                    if (Tree.RemoveEntity(entity))
-                    {
-                        entity.Transform.PropertyChanged -= TransformOnPropertyChanged;
-                    }
-
-                    entity.IsInHierarchy = false;
-                }
+                component.OnEnable();
             }
         }
 
@@ -463,33 +434,12 @@ namespace MonoEntities
             {
                 Component component = _componentsForRemoving.Dequeue();
                 Entity entity = component.Entity;
-                component.Enabled = false;
+
+                component.OnDisable();
                 component.OnDestroy();
 
                 RemoveComponentFromCache(component.GetType(), component);
                 entity.Components.Remove(component);
-            }
-        }
-
-        private void ProcessTransformChanges()
-        {
-            while (_transformChangeRequests.Count != 0)
-            {
-                TransformPropertyChangedRequest request = _transformChangeRequests.Dequeue();
-
-                string propertyName = request.Arguments.PropertyName;
-
-                if (propertyName == nameof(Transform2DComponent.ZIndex))
-                {
-                    Tree.UpdateSiblingsZIndex(request.Sender.Entity);
-                }
-                else if (propertyName == nameof(Transform2DComponent.Parent))
-                {
-                    var oldParent = (Transform2DComponent)request.Arguments.OldValue;
-                    var newParent = (Transform2DComponent)request.Arguments.NewValue;
-
-                    Tree.ChangeParent(request.Sender.Entity, oldParent?.Entity, newParent?.Entity);
-                }
             }
         }
 
@@ -521,11 +471,6 @@ namespace MonoEntities
         }
 
         #endregion
-
-        private void TransformOnPropertyChanged(object sender, PropertyChangedExtendedEventArgs propertyChangedExtendedEventArgs)
-        {
-            _transformChangeRequests.Enqueue(new TransformPropertyChangedRequest((Transform2DComponent)sender, propertyChangedExtendedEventArgs));
-        }
     }
 }
 

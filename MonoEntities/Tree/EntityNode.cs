@@ -24,7 +24,8 @@ namespace MonoEntities.Tree
 
         public IEnumerator<EntityNode> GetEnumerator()
         {
-            yield return this;
+            if(!IsRoot)
+                yield return this;
 
             foreach (EntityNode entityNode in ChildNodes)
             {

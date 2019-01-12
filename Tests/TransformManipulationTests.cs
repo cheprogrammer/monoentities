@@ -19,6 +19,7 @@ namespace Tests
         public void ParentChangingBeforeRegistration()
         {
             EcsService service = EcsServiceFactory.CreateECSManager();
+
             Entity parent = service.CreateEntityFromTemplate<TestEntityTemplate>();
             Entity child = service.CreateEntityFromTemplate<TestEntityTemplate>();
 

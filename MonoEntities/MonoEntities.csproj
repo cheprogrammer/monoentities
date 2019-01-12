@@ -67,7 +67,6 @@
     <Compile Include="TransformPropertyChangedRequest.cs" />
     <Compile Include="Tree\EntityNode.cs" />
     <Compile Include="Tree\EntityNodeComparator.cs" />
-    <Compile Include="Tree\EntityNodePropertyChangedRequest.cs" />
     <Compile Include="EntityTemplate.cs" />
     <Compile Include="EntityTemplateAttribute.cs" />
     <Compile Include="Tree\EntityTree.cs" />

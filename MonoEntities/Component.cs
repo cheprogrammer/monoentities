@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using MonoEntities.Components;
 
 namespace MonoEntities
 {
@@ -13,34 +14,17 @@ namespace MonoEntities
     {
         protected internal Entity Entity { get; internal set; }
 
+        internal EcsService Service => Entity.Service;
+
         internal bool Started { get; set; } = false;
 
-        private bool _enabled = true;
+        public Transform2DComponent Transform => Entity.Transform;
 
-        public bool Enabled
-        {
-            get => _enabled;
-            set
-            {
-                _enabled = value;
-
-                if (!Started)
-                    return;
-
-                if (_enabled)
-                    OnEnable();
-                else
-                    OnDisable();
-            }
-        }
-
-        public bool Removed { get; internal set; } = false;
+        internal bool Removed { get; set; } = false;
 
         internal bool MarkedToBeRemoved { get; set; } = false;
 
-
-        internal bool Processable => Started && Enabled && !MarkedToBeRemoved;
-
+        internal bool Processable => Started && !MarkedToBeRemoved && Entity.EnabledInHierarchy;
 
         protected internal Component()
         {

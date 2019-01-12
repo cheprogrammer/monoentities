@@ -9,7 +9,7 @@ using MonoGame.Extended;
 
 namespace MonoEntities.Components
 {
-    public class Transform2DComponent : Component, INotifyPropertyChangedExtended
+    public class Transform2DComponent : Component
     {
         [Flags]
         private enum TransformFlags : byte
@@ -107,9 +107,12 @@ namespace MonoEntities.Components
                 if (_zIndex == value)
                     return;
 
-                int oldZIndex = _zIndex;
                 _zIndex = value;
-                OnPropertyChanged(oldZIndex, _zIndex);
+
+                if (Service.IsDrawing)
+                    throw new Exception("Cannot change Z Index during Draw phase");
+
+                Service.Tree.UpdateSiblingsZIndex(Entity);
             }
         }
 
@@ -165,7 +168,11 @@ namespace MonoEntities.Components
                 Transform2DComponent parent = Parent;
                 _parent = value;
                 OnParentChanged(parent, value);
-                OnPropertyChanged(parent, _parent);
+
+                if(Service.IsDrawing)
+                    throw new Exception("Cannot change parent during Draw phase");
+
+                Service.Tree.ChangeParent(Entity, parent?.Entity, value?.Entity);
             }
         }
 
@@ -246,13 +253,5 @@ namespace MonoEntities.Components
             matrix = Matrix2D.CreateScale(_scale) * Matrix2D.CreateRotationZ(_rotation) *
                      Matrix2D.CreateTranslation(_position - (_origin * _scale));
         }
-
-        protected virtual void OnPropertyChanged(object oldValue, object newValue,
-            [CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedExtendedEventArgs(oldValue, newValue, propertyName));
-        }
-
-        public event PropertyChangedExtendedEventHandler PropertyChanged;
     }
 }
