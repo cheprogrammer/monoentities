@@ -15,23 +15,74 @@ namespace Tests
     public class ComponentManipulationTests
     {
         [Test]
-        public void CreateEntityWithComponentWhichAddaAnotherComponentDuringStart()
+        public void CreateEntityWithComponentWhichAddedAnotherComponentDuringStart()
         {
             EcsService service = EcsServiceFactory.CreateECSManager();
-            Entity entity = service.CreateEntityFromTemplate<ComponentCreatesAnotherComponentTemplate>();
+            Entity entity = service.CreateEntityFromTemplate<ConfigurableComponentTemplate>();
+            var component = entity.GetComponent<ConfigurableComponent>();
+
+            component.OnStartAction = configurableComponent =>
+            {
+                configurableComponent.Entity.AddComponent<ComponentA>();
+            };
+
+            service.Update(new GameTime());
+            
+            var componentA = entity.GetComponent<ComponentA>();
+
+            Assert.That(componentA, Is.Not.Null);
+            Assert.That(componentA.IsStarted, Is.True);
+        }
+
+        [Test]
+        public void CreateEntityWithComponentWhichAddedAnotherComponentDuringUpdate()
+        {
+            EcsService service = EcsServiceFactory.CreateECSManager();
+            Entity entity = service.CreateEntityFromTemplate<ConfigurableComponentTemplate>();
+            var component = entity.GetComponent<ConfigurableComponent>();
+
+            component.OnUpdateAction = configurableComponent =>
+            {
+                if(configurableComponent.Entity.GetComponent<ComponentA>() == null)
+                    configurableComponent.Entity.AddComponent<ComponentA>();
+            };
 
             service.Update(new GameTime());
 
-            var component = entity.GetComponent<ComponentCreatesAnotherComponent>();
             var componentA = entity.GetComponent<ComponentA>();
-            var componentB = entity.GetComponent<ComponentB>();
 
-            Assert.That(component, Is.Not.Null);
             Assert.That(componentA, Is.Not.Null);
-            Assert.That(componentB, Is.Not.Null);
+            Assert.That(componentA.IsStarted, Is.False);
 
-            Assert.That(componentA.IsStarted);
-            Assert.That(componentB.IsStarted);
+            service.Update(new GameTime());
+
+            Assert.That(componentA.IsStarted, Is.True);
+            Assert.That(componentA.IsUpdated, Is.True);
+        }
+
+        [Test]
+        public void CreateEntityWithComponentWhichAddedAnotherComponentDuringStartAndRemovedDuringUpdate()
+        {
+            EcsService service = EcsServiceFactory.CreateECSManager();
+            Entity entity = service.CreateEntityFromTemplate<ConfigurableComponentTemplate>();
+            var component = entity.GetComponent<ConfigurableComponent>();
+            ComponentA componentA = null;
+
+            component.OnStartAction = configurableComponent =>
+            {
+                componentA = configurableComponent.Entity.AddComponent<ComponentA>();
+            };
+
+            component.OnUpdateAction = configurableComponent =>
+            {
+                configurableComponent.Entity.RemoveComponent<ComponentA>();
+            };
+
+            service.Update(new GameTime());
+
+            Assert.That(entity.GetComponent<ComponentA>(), Is.Null);
+            Assert.That(componentA.IsStarted, Is.True);
+            Assert.That(componentA.IsUpdated, Is.False);
         }
     }
 }

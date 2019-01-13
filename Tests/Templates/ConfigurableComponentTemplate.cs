@@ -8,12 +8,12 @@ using Tests.Components;
 
 namespace Tests.Templates
 {
-    [EntityTemplate(Name = nameof(ComponentCreatesAnotherComponentTemplate))]
-    public class ComponentCreatesAnotherComponentTemplate : EntityTemplate
+    [EntityTemplate(Name = nameof(ConfigurableComponentTemplate))]
+    public class ConfigurableComponentTemplate : EntityTemplate
     {
         public override void BuildEntity(Entity entity, params object[] args)
         {
-            entity.AddComponent<ComponentCreatesAnotherComponent>();
+            entity.AddComponent<ConfigurableComponent>();
         }
     }
 }

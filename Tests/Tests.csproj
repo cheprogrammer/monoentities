@@ -59,8 +59,8 @@
     <Compile Include="ComponentManipulationTests.cs" />
     <Compile Include="Components\ComponentB.cs" />
     <Compile Include="Components\ComponentA.cs" />
-    <Compile Include="Components\ComponentCreatesAnotherComponent.cs" />
-    <Compile Include="Templates\ComponentCreatesAnotherComponentTemplate.cs" />
+    <Compile Include="Components\ConfigurableComponent.cs" />
+    <Compile Include="Templates\ConfigurableComponentTemplate.cs" />
     <Compile Include="Templates\TestEntityTemplate.cs" />
     <Compile Include="Templates\TwoComponentsEntityTemplate.cs" />
     <Compile Include="SetupEcsServiceFactory.cs" />

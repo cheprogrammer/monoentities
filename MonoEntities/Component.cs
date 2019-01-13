@@ -12,7 +12,7 @@ namespace MonoEntities
 {
     public abstract class Component
     {
-        protected internal Entity Entity { get; internal set; }
+        public Entity Entity { get; internal set; }
 
         internal EcsService Service => Entity.Service;
 
