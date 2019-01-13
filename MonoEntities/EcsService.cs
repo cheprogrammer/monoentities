@@ -203,6 +203,9 @@ namespace MonoEntities
 
         internal Entity CreateEntity()
         {
+            if (IsDrawing)
+                throw new Exception("Cannot create entity during Draw phase");
+
             Entity entity = new Entity(this);
 
             if (_freeIds.Count != 0)
@@ -217,8 +220,7 @@ namespace MonoEntities
             Transform2DComponent transform = (Transform2DComponent)AddComponent(entity, typeof(Transform2DComponent));
             entity.Transform = transform;
 
-            if (!IsDrawing)
-                Tree.AddEntity(entity);
+            Tree.AddEntity(entity);
 
             _entitiesForAdding.Enqueue(entity);
 
@@ -235,6 +237,9 @@ namespace MonoEntities
 
         private void DestroyEntity(Entity entity)
         {
+            if (IsDrawing)
+                throw new Exception("Cannot destroy entity during Draw phase");
+
             entity.Enabled = false;
             entity.MarkedToBeRemoved = true;
 
@@ -244,8 +249,7 @@ namespace MonoEntities
                 RemoveComponent(entity, component.GetType());
             }
 
-            if (!IsDrawing)
-                Tree.RemoveEntity(entity);
+            Tree.RemoveEntity(entity);
 
             _entitiesForRemoving.Enqueue(entity);
         }
@@ -256,6 +260,9 @@ namespace MonoEntities
 
         internal Component AddComponent(Entity entity, Type componentType)
         {
+            if (IsDrawing)
+                throw new Exception("Cannot add component during Draw phase");
+
             Component component = (Component)Activator.CreateInstance(componentType);
             component.Entity = entity;
 
@@ -270,6 +277,9 @@ namespace MonoEntities
 
         internal void RemoveComponent(Entity entity, Type componentType)
         {
+            if (IsDrawing)
+                throw new Exception("Cannot remove component during Draw phase");
+
             Component component = entity.Components[componentType];
             component.MarkedToBeRemoved = true;
 
@@ -390,9 +400,6 @@ namespace MonoEntities
                 if (entity.MarkedToBeRemoved)
                     continue;
 
-                if (!Tree.EntityExists(entity)) // entity was added during draw stage
-                    Tree.AddEntity(entity);
-
                 _entities.Add(entity);
                 entity.Started = true;
             }
@@ -403,9 +410,6 @@ namespace MonoEntities
             while (_entitiesForRemoving.Count != 0)
             {
                 Entity entity = _entitiesForRemoving.Dequeue();
-
-                if(Tree.EntityExists(entity))
-                    Tree.RemoveEntity(entity);
 
                 _entities.Remove(entity);
                 _freeIds.Enqueue(entity.Id);

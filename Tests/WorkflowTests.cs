@@ -9,7 +9,7 @@ using Tests.Templates;
 namespace Tests
 {
     [TestFixture]
-    public class WorkflowUnitTest
+    public class WorkflowTests
     {
         [Test]
         public void BasicWorkflow()
