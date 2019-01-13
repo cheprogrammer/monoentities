@@ -60,13 +60,13 @@
   <ItemGroup>
     <Compile Include="Component.cs" />
     <Compile Include="ComponentCollection.cs" />
-    <Compile Include="Components\Transform2DComponent.cs" />
+    <Compile Include="Transform2DComponent.cs" />
     <Compile Include="EcsServiceFactory.cs" />
     <Compile Include="EcsService.cs" />
     <Compile Include="EcsWorkflowException.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Tree\EntityNode.cs" />
-    <Compile Include="Tree\EntityNodeComparator.cs" />
+    <Compile Include="Tree\EntityNodeZIndexComparator.cs" />
     <Compile Include="EntityTemplate.cs" />
     <Compile Include="EntityTemplateAttribute.cs" />
     <Compile Include="Tree\EntityTree.cs" />
@@ -76,5 +76,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

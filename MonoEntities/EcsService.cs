@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
-using MonoEntities.Components;
 using MonoEntities.Tree;
 using NLog;
 
@@ -37,6 +36,7 @@ namespace MonoEntities
         private readonly Dictionary<Type, List<Component>> _componentsCache = new Dictionary<Type, List<Component>>();
 
         internal bool IsDrawing { get; set; } = false;
+
 
         internal EcsService(IEnumerable<Type> availableTemplates)
         {

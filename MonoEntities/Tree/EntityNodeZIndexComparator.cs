@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace MonoEntities.Tree
 {
     [ExcludeFromCodeCoverage]
-    public class EntityNodeComparator : IComparer<EntityNode>
+    public class EntityNodeZIndexComparator : IComparer<EntityNode>
     {
         public int Compare(EntityNode x, EntityNode y)
         {

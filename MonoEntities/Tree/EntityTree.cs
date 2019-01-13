@@ -33,11 +33,6 @@ namespace MonoEntities.Tree
             }
         }
 
-        /// <summary>
-        /// Adds new Entity to the tree
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         internal void AddEntity(Entity entity)
         {
             if(_entityNodes.ContainsKey(entity))
@@ -52,11 +47,6 @@ namespace MonoEntities.Tree
             _entityNodes.Add(entity, node);
         }
 
-        /// <summary>
-        /// Removes Entity with empty child nodes from tree
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         internal void RemoveEntity(Entity entity)
         {
             if (!_entityNodes.ContainsKey(entity))
@@ -71,12 +61,6 @@ namespace MonoEntities.Tree
             _entityNodes.Remove(entity);
         }
 
-        /// <summary>
-        /// Updates the parent of entity
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="oldParent"></param>
-        /// <param name="newParent"></param>
         internal void ChangeParent(Entity entity, Entity oldParent, Entity newParent)
         {
             var parentNode = FindNode(oldParent);
@@ -86,10 +70,6 @@ namespace MonoEntities.Tree
             newParentNode.AttachChild(node);
         }
 
-        /// <summary>
-        /// Updates the parent child nodes order
-        /// </summary>
-        /// <param name="entity"></param>
         internal void UpdateSiblingsZIndex(Entity entity)
         {
             FindParent(entity).SortChildren();

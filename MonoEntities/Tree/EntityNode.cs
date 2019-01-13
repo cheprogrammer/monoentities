@@ -8,7 +8,7 @@ namespace MonoEntities.Tree
     [ExcludeFromCodeCoverage]
     public class EntityNode : IEnumerable<EntityNode>
     {
-        internal static IComparer<EntityNode> Comparator = new EntityNodeComparator();
+        internal static IComparer<EntityNode> Comparator = new EntityNodeZIndexComparator();
 
         public Entity Entity { get; }
 

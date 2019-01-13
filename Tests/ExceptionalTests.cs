@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using MonoEntities;
-using MonoEntities.Components;
 using NUnit.Framework;
 using Tests.Components;
 using Tests.Templates;

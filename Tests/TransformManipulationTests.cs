@@ -130,7 +130,7 @@ namespace Tests
             {
                 if (entityNode.Entity == parent)
                 {
-                    Assert.That(entityNode, Is.Ordered.Using(new EntityNodeComparator()));
+                    Assert.That(entityNode, Is.Ordered.Using(new EntityNodeZIndexComparator()));
                 }
             }
 
@@ -141,7 +141,7 @@ namespace Tests
             {
                 if (entityNode.Entity == parent)
                 {
-                    Assert.That(entityNode, Is.Ordered.Using(new EntityNodeComparator()));
+                    Assert.That(entityNode, Is.Ordered.Using(new EntityNodeZIndexComparator()));
                 }
             }
         }
