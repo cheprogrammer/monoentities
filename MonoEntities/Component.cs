@@ -46,7 +46,17 @@ namespace MonoEntities
 
         }
 
+        protected internal virtual void BeforeDraw(GameTime gametime)
+        {
+
+        }
+
         protected internal virtual void Draw(GameTime gameTime)
+        {
+
+        }
+
+        protected internal virtual void AfterDraw(GameTime gametime)
         {
 
         }
@@ -57,6 +67,11 @@ namespace MonoEntities
         }
 
         protected internal virtual void OnDestroy()
+        {
+
+        }
+
+        public virtual void Reset()
         {
 
         }

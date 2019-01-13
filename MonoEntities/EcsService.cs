@@ -72,6 +72,8 @@ namespace MonoEntities
             ProcessEntitiesForAdding();
             ProcessComponentForAdding();
 
+            BeforeUpdate?.Invoke();
+
             foreach (Entity entity in _entities)
             {
                 if (!entity.Processable)
@@ -87,6 +89,8 @@ namespace MonoEntities
                 }
             }
 
+            AfterUpdate?.Invoke();
+
             ProcessEntitiesForRemoving();
             ProcessComponentsForRemoving();
         }
@@ -99,10 +103,14 @@ namespace MonoEntities
         {
             IsDrawing = true;
 
+            BeforeDraw?.Invoke();
+
             foreach (EntityNode entityNode in Tree.ChildNodes)
             {
                 DrawNode(entityNode, gameTime);
             }
+
+            AfterDraw?.Invoke();
 
             IsDrawing = false;
         }
@@ -129,9 +137,14 @@ namespace MonoEntities
             {
                 var entityComponent = entity.Components[i];
 
-                if(entityComponent.Processable)
+                if (entityComponent.Processable)
+                {
+                    entityComponent.BeforeDraw(gameTime);
                     entityComponent.Draw(gameTime);
+                    entityComponent.AfterDraw(gameTime);
+                }
             }
+
         }
 
         #endregion
@@ -312,12 +325,22 @@ namespace MonoEntities
 
         #region Components Searching
 
-        internal Component FindComponent(Type componentType)
+        public T FindComponent<T>() where T: Component
+        {
+            return (T)FindComponents(typeof(T)).FirstOrDefault();
+        }
+
+        public IEnumerable<T> FindComponents<T>(Type componentType) where T: Component
+        {
+            return FindComponents(typeof(T)).OfType<T>();
+        }
+
+        public Component FindComponent(Type componentType)
         {
             return FindComponents(componentType).FirstOrDefault();
         }
 
-        internal IEnumerable<Component> FindComponents(Type componentType)
+        public IEnumerable<Component> FindComponents(Type componentType)
         {
             if (_componentsCache.TryGetValue(componentType, out var result))
             {
@@ -485,6 +508,17 @@ namespace MonoEntities
             }
         }
 
+        #endregion
+
+        #region Events
+
+        public event Action BeforeUpdate;
+
+        public event Action AfterUpdate;
+
+        public event Action BeforeDraw;
+
+        public event Action AfterDraw;
         #endregion
     }
 }

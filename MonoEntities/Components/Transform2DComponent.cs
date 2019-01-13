@@ -96,6 +96,15 @@ namespace MonoEntities.Components
             }
         }
 
+        public override void Reset()
+        {
+            Position = Vector2.Zero;
+            Origin = Vector2.Zero;
+            Rotation = 0;
+            Scale = Vector2.One;
+            ZIndex = 0;
+        }
+
         /// <summary>
         /// Gets or sets local Z Index
         /// </summary>
