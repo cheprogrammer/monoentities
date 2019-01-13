@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MonoEntities
 {
+    [ExcludeFromCodeCoverage]
     internal class ComponentCollection : IEnumerable<Component>
     {
         private IList<Component> Components { get; } = new List<Component>(16);
@@ -60,7 +62,7 @@ namespace MonoEntities
         public bool Remove(Component item)
         {
             Type componentType = item.GetType();
-            return Components.Remove(item) && ComponentsByType.Remove(componentType);
+            return Remove(componentType);
         }
 
         public bool Remove(Type componentType)

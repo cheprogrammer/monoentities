@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -20,12 +21,11 @@ namespace MonoEntities
 
         public Transform2DComponent Transform => Entity.Transform;
 
-        internal bool Removed { get; set; } = false;
-
         internal bool MarkedToBeRemoved { get; set; } = false;
 
         internal bool Processable => Started && !MarkedToBeRemoved && Entity.EnabledInHierarchy;
 
+        [ExcludeFromCodeCoverage]
         protected internal Component()
         {
 
@@ -64,6 +64,21 @@ namespace MonoEntities
         public void Destroy()
         {
             Entity.RemoveComponent(GetType());
+        }
+
+        public Entity CreateEntityFromTemplate<T>(params object[] args) where T : EntityTemplate
+        {
+            return Service.CreateEntityFromTemplate<T>(args);
+        }
+
+        public Entity CreateEntityFromTemplate(string templateName, params object[] args)
+        {
+            return Service.CreateEntityFromTemplate(templateName, args);
+        }
+
+        public Entity CreateEntity()
+        {
+            return Service.CreateEntity();
         }
     }
 }

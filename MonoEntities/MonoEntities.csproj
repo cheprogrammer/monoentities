@@ -63,14 +63,13 @@
     <Compile Include="Components\Transform2DComponent.cs" />
     <Compile Include="EcsServiceFactory.cs" />
     <Compile Include="EcsService.cs" />
+    <Compile Include="EcsWorkflowException.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="TransformPropertyChangedRequest.cs" />
     <Compile Include="Tree\EntityNode.cs" />
     <Compile Include="Tree\EntityNodeComparator.cs" />
     <Compile Include="EntityTemplate.cs" />
     <Compile Include="EntityTemplateAttribute.cs" />
     <Compile Include="Tree\EntityTree.cs" />
-    <Compile Include="INotifyPropertyChangedExtended.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

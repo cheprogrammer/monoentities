@@ -14,7 +14,7 @@ namespace Tests.Components
 
         public bool IsUpdated;
 
-        public bool IsDrawn;
+        public bool IsDrew;
 
         public bool IsDestroyed;
 
@@ -32,7 +32,7 @@ namespace Tests.Components
 
         protected override void Draw(GameTime gameTime)
         {
-            IsDrawn = true;
+            IsDrew = true;
         }
 
         protected override void OnDestroy()

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MonoEntities.Tree
 {
+    [ExcludeFromCodeCoverage]
     public class EntityNode : IEnumerable<EntityNode>
     {
         internal static IComparer<EntityNode> Comparator = new EntityNodeComparator();
@@ -12,7 +14,7 @@ namespace MonoEntities.Tree
 
         public bool IsRoot => Entity == null;
 
-        internal EntityNode Parent { get; set; }
+        protected EntityNode Parent { get; set; }
 
         internal List<EntityNode> ChildNodes { get; } = new List<EntityNode>();
 

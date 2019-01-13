@@ -60,8 +60,12 @@
     <Compile Include="Components\ComponentB.cs" />
     <Compile Include="Components\ComponentA.cs" />
     <Compile Include="Components\ConfigurableComponent.cs" />
+    <Compile Include="EntityEnablingTests.cs" />
+    <Compile Include="EntityManipulationTests.cs" />
+    <Compile Include="ExceptionalTests.cs" />
     <Compile Include="Templates\ConfigurableComponentTemplate.cs" />
     <Compile Include="Templates\TestEntityTemplate.cs" />
+    <Compile Include="Templates\TestTemplateWithNonDefautConstructor.cs" />
     <Compile Include="Templates\TwoComponentsEntityTemplate.cs" />
     <Compile Include="SetupEcsServiceFactory.cs" />
     <Compile Include="TransformManipulationTests.cs" />

@@ -110,7 +110,7 @@ namespace MonoEntities.Components
                 _zIndex = value;
 
                 if (Service.IsDrawing)
-                    throw new Exception("Cannot change Z Index during Draw phase");
+                    throw new EcsWorkflowException("Cannot change Z Index during Draw phase");
 
                 Service.Tree.UpdateSiblingsZIndex(Entity);
             }
@@ -170,7 +170,7 @@ namespace MonoEntities.Components
                 OnParentChanged(parent, value);
 
                 if(Service.IsDrawing)
-                    throw new Exception("Cannot change parent during Draw phase");
+                    throw new EcsWorkflowException("Cannot change parent during Draw phase");
 
                 Service.Tree.ChangeParent(Entity, parent?.Entity, value?.Entity);
             }

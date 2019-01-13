@@ -144,7 +144,7 @@ namespace MonoEntities
         /// <typeparam name="T">Template Type</typeparam>
         /// <param name="args">Argumenst which will be passed to template</param>
         /// <returns></returns>
-        public Entity CreateEntityFromTemplate<T>(params object[] args) where T : EntityTemplate, new()
+        public Entity CreateEntityFromTemplate<T>(params object[] args) where T : EntityTemplate
         {
             return CreateEntityFromTemplate(typeof(T), args);
         }
@@ -161,11 +161,11 @@ namespace MonoEntities
 
             if (_templates.TryGetValue(templateType, out var template))
             {
-                result = CreateEntityFromTemplateInternal(template, args);
+                result = CreateEntityFromTemplatePrivate(template, args);
             }
             else
             {
-                Log.Error($"Unable to build entity from template '{templateType.Name}': this template does not registered");
+                throw new ArgumentException($"Unable to build entity from template '{templateType.Name}': this template was not registered", nameof(templateType));
             }
 
             return result;
@@ -183,17 +183,17 @@ namespace MonoEntities
 
             if (_templatesByName.TryGetValue(templateName, out var template))
             {
-                result = CreateEntityFromTemplateInternal(template, args);
+                result = CreateEntityFromTemplatePrivate(template, args);
             }
             else
             {
-                Log.Error($"Unable to build entity from template with name '{templateName}': this template does not registered in system");
+                throw new ArgumentException($"Unable to build entity from template '{templateName}': this template was not registered", nameof(templateName));
             }
 
             return result;
         }
 
-        internal Entity CreateEntityFromTemplateInternal(EntityTemplate template, params object[] args)
+        private Entity CreateEntityFromTemplatePrivate(EntityTemplate template, params object[] args)
         {
             Entity result = CreateEntity();
             template.BuildEntity(result, args);
@@ -201,10 +201,14 @@ namespace MonoEntities
             return result;
         }
 
-        internal Entity CreateEntity()
+        /// <summary>
+        /// Creates empty entity with default transform Component
+        /// </summary>
+        /// <returns></returns>
+        public Entity CreateEntity()
         {
             if (IsDrawing)
-                throw new Exception("Cannot create entity during Draw phase");
+                throw new EcsWorkflowException("Cannot create entity during Draw phase");
 
             Entity entity = new Entity(this);
 
@@ -229,6 +233,9 @@ namespace MonoEntities
 
         internal void Destroy(Entity entity)
         {
+            if (entity.MarkedToBeRemoved)
+                throw new EcsWorkflowException("Cannot destroy already destroyed entity");
+
             foreach (EntityNode entityNode in Tree.FindNode(entity).Reverse())
             {
                 DestroyEntity(entityNode.Entity);
@@ -238,7 +245,7 @@ namespace MonoEntities
         private void DestroyEntity(Entity entity)
         {
             if (IsDrawing)
-                throw new Exception("Cannot destroy entity during Draw phase");
+                throw new EcsWorkflowException("Cannot destroy entity during Draw phase");
 
             entity.Enabled = false;
             entity.MarkedToBeRemoved = true;
@@ -261,7 +268,7 @@ namespace MonoEntities
         internal Component AddComponent(Entity entity, Type componentType)
         {
             if (IsDrawing)
-                throw new Exception("Cannot add component during Draw phase");
+                throw new EcsWorkflowException("Cannot add component during Draw phase");
 
             Component component = (Component)Activator.CreateInstance(componentType);
             component.Entity = entity;
@@ -278,9 +285,13 @@ namespace MonoEntities
         internal void RemoveComponent(Entity entity, Type componentType)
         {
             if (IsDrawing)
-                throw new Exception("Cannot remove component during Draw phase");
+                throw new EcsWorkflowException("Cannot remove component during Draw phase");
 
             Component component = entity.Components[componentType];
+
+            if(component.MarkedToBeRemoved)
+                throw new EcsWorkflowException("Cannot remove already destroyed component");
+
             component.MarkedToBeRemoved = true;
 
             _componentsForRemoving.Enqueue(component);

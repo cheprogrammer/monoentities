@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MonoEntities.Tree
 {
     public class EntityTree : EntityNode
     {
         private readonly Dictionary<Entity, EntityNode> _entityNodes = new Dictionary<Entity, EntityNode>();
-
-        internal bool EntityExists(Entity entity)
-        {
-            return _entityNodes.ContainsKey(entity);
-        }
 
         internal EntityNode FindNode(Entity entity)
         {

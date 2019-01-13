@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -45,6 +46,7 @@ namespace MonoEntities
         /// Creates fully initialized ECS Manager
         /// </summary>
         /// <returns></returns>
+        [ExcludeFromCodeCoverage]
         public static EcsService CreateECSManager()
         {
             if (!_assembliesScanned)

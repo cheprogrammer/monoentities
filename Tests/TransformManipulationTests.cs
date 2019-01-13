@@ -108,5 +108,43 @@ namespace Tests
                 }
             }
         }
+
+        [Test]
+        public void ZIndexChanging()
+        {
+            EcsService service = EcsServiceFactory.CreateECSManager();
+            Entity parent = service.CreateEntityFromTemplate<TestEntityTemplate>();
+            Entity childOne = service.CreateEntityFromTemplate<TestEntityTemplate>();
+            Entity childTwo = service.CreateEntityFromTemplate<TestEntityTemplate>();
+
+            childOne.Transform.Parent = parent.Transform;
+            childTwo.Transform.Parent = parent.Transform;
+
+            
+            childOne.Transform.ZIndex = 10;
+            childTwo.Transform.ZIndex = 20;
+
+            service.Update(new GameTime());
+
+            foreach (EntityNode entityNode in service.Tree)
+            {
+                if (entityNode.Entity == parent)
+                {
+                    Assert.That(entityNode, Is.Ordered.Using(new EntityNodeComparator()));
+                }
+            }
+
+            childOne.Transform.ZIndex = 20;
+            childTwo.Transform.ZIndex = 10;
+
+            foreach (EntityNode entityNode in service.Tree)
+            {
+                if (entityNode.Entity == parent)
+                {
+                    Assert.That(entityNode, Is.Ordered.Using(new EntityNodeComparator()));
+                }
+            }
+        }
     }
 }
+

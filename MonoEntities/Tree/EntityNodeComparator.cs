@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MonoEntities.Tree
 {
-    internal class EntityNodeComparator : IComparer<EntityNode>
+    [ExcludeFromCodeCoverage]
+    public class EntityNodeComparator : IComparer<EntityNode>
     {
         public int Compare(EntityNode x, EntityNode y)
         {
