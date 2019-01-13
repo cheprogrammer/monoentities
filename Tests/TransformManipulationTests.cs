@@ -116,13 +116,16 @@ namespace Tests
             Entity parent = service.CreateEntityFromTemplate<TestEntityTemplate>();
             Entity childOne = service.CreateEntityFromTemplate<TestEntityTemplate>();
             Entity childTwo = service.CreateEntityFromTemplate<TestEntityTemplate>();
+            Entity childThree = service.CreateEntityFromTemplate<TestEntityTemplate>();
 
             childOne.Transform.Parent = parent.Transform;
             childTwo.Transform.Parent = parent.Transform;
+            childThree.Transform.Parent = parent.Transform;
 
-            
+
             childOne.Transform.ZIndex = 10;
             childTwo.Transform.ZIndex = 20;
+            childThree.Transform.ZIndex = 30;
 
             service.Update(new GameTime());
 
@@ -136,6 +139,31 @@ namespace Tests
 
             childOne.Transform.ZIndex = 20;
             childTwo.Transform.ZIndex = 10;
+            childThree.Transform.ZIndex = 5;
+
+            foreach (EntityNode entityNode in service.Tree)
+            {
+                if (entityNode.Entity == parent)
+                {
+                    Assert.That(entityNode, Is.Ordered.Using(new EntityNodeZIndexComparator()));
+                }
+            }
+
+            childOne.Transform.ZIndex = 20;
+            childTwo.Transform.ZIndex = 5;
+            childThree.Transform.ZIndex = 10;
+
+            foreach (EntityNode entityNode in service.Tree)
+            {
+                if (entityNode.Entity == parent)
+                {
+                    Assert.That(entityNode, Is.Ordered.Using(new EntityNodeZIndexComparator()));
+                }
+            }
+
+            childOne.Transform.ZIndex = 5;
+            childTwo.Transform.ZIndex = 5;
+            childThree.Transform.ZIndex = 10;
 
             foreach (EntityNode entityNode in service.Tree)
             {

@@ -72,7 +72,7 @@ namespace MonoEntities.Tree
 
         internal void UpdateSiblingsZIndex(Entity entity)
         {
-            FindParent(entity).SortChildren();
+            FindParent(entity).UpdateZIndex(FindNode(entity));
         }
     }
 }

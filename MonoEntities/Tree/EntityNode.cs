@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using MonoEntities.Extensions;
 
 namespace MonoEntities.Tree
 {
@@ -46,10 +47,7 @@ namespace MonoEntities.Tree
         internal EntityNode AddChild(Entity entity)
         {
             EntityNode node = new EntityNode(entity, this);
-            ChildNodes.Add(node);
-
-            SortChildren();
-
+            ChildNodes.InsertElementAscending(node);
             return node;
         }
 
@@ -74,9 +72,8 @@ namespace MonoEntities.Tree
 
         internal void AttachChild(EntityNode node)
         {
-            ChildNodes.Add(node);
+            ChildNodes.InsertElementAscending(node);
             node.Parent = this;
-            SortChildren();
         }
 
         internal EntityNode DetachChild(Entity entity)
@@ -96,9 +93,10 @@ namespace MonoEntities.Tree
             throw new Exception("Cannot detach child node: child node not found");
         }
 
-        internal void SortChildren()
+        internal void UpdateZIndex(EntityNode entityNode)
         {
-            ChildNodes.Sort(Comparator);
+            ChildNodes.Remove(entityNode);
+            ChildNodes.InsertElementAscending(entityNode);
         }
     }
 }

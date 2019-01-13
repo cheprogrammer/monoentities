@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Component.cs" />
     <Compile Include="ComponentCollection.cs" />
+    <Compile Include="Extensions\ListExtension.cs" />
     <Compile Include="Transform2DComponent.cs" />
     <Compile Include="EcsServiceFactory.cs" />
     <Compile Include="EcsService.cs" />
