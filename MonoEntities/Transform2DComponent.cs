@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
 namespace MonoEntities
 {
-    public class Transform2DComponent : Component
+    public class Transform2DComponent : Component, IEnumerable<Transform2DComponent>
     {
         [Flags]
         private enum TransformFlags : byte
@@ -256,6 +259,16 @@ namespace MonoEntities
         {
             matrix = Matrix2D.CreateScale(_scale) * Matrix2D.CreateRotationZ(_rotation) *
                      Matrix2D.CreateTranslation(_position - (_origin * _scale));
+        }
+
+        public IEnumerator<Transform2DComponent> GetEnumerator()
+        {
+            return Service.Tree.FindNode(Entity).ChildNodes.Select(e => e.Entity.Transform).ToList().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

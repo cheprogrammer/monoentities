@@ -110,6 +110,32 @@ namespace Tests
         }
 
         [Test]
+        public void TransformChildIterationTest()
+        {
+            EcsService service = EcsServiceFactory.CreateECSManager();
+            Entity parent = service.CreateEntityFromTemplate<TestEntityTemplate>();
+
+            Entity child1 = service.CreateEntityFromTemplate<TestEntityTemplate>();
+            Entity child2 = service.CreateEntityFromTemplate<TestEntityTemplate>();
+            Entity child3 = service.CreateEntityFromTemplate<TestEntityTemplate>();
+
+            child1.Transform.Parent = parent.Transform;
+            child2.Transform.Parent = parent.Transform;
+            child3.Transform.Parent = parent.Transform;
+
+            Transform2DComponent[] childTransforms = new[]
+            {
+                child1.Transform,
+                child2.Transform,
+                child3.Transform
+            };
+            
+            service.Update(new GameTime());
+
+            Assert.That(parent.Transform, Is.EquivalentTo(childTransforms));
+        }
+
+        [Test]
         public void ZIndexChanging()
         {
             EcsService service = EcsServiceFactory.CreateECSManager();
