@@ -64,7 +64,7 @@ namespace Tests
             var component = entity.GetComponent<ConfigurableComponent>();
             component.OnDrawAction = configurableComponent =>
                 {
-                    configurableComponent.CreateEntityFromTemplate<ConfigurableComponentTemplate>();
+                    service.CreateEntityFromTemplate<ConfigurableComponentTemplate>();
                 };
 
             service.Update(new GameTime());

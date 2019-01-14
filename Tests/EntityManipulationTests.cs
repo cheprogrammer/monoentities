@@ -162,7 +162,7 @@ namespace Tests
 
             component.OnStartAction = configurableComponent =>
             {
-                newEntity = configurableComponent.CreateEntity();
+                newEntity = service.CreateEntity();
                 newEntity.AddComponent<ConfigurableComponent>();
             };
 
@@ -183,7 +183,7 @@ namespace Tests
 
             component.OnStartAction = configurableComponent =>
                 {
-                    newEntity = configurableComponent.CreateEntityFromTemplate(nameof(ConfigurableComponentTemplate));
+                    newEntity = service.CreateEntityFromTemplate(nameof(ConfigurableComponentTemplate));
                 };
 
             service.Update(new GameTime());
@@ -203,7 +203,7 @@ namespace Tests
 
             component.OnUpdateAction = configurableComponent =>
                 {
-                    newEntity = configurableComponent.CreateEntityFromTemplate<ConfigurableComponentTemplate>();
+                    newEntity = service.CreateEntityFromTemplate<ConfigurableComponentTemplate>();
                 };
 
             service.Update(new GameTime());
