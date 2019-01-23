@@ -257,7 +257,7 @@ namespace MonoEntities
 
         private void RecalculateLocalMatrix(out Matrix2D matrix)
         {
-            matrix = Matrix2D.CreateScale(_scale) * 
+            matrix = /*Matrix2D.CreateScale(_scale) **/
                      Matrix2D.CreateRotationZ(_rotation) *
                      Matrix2D.CreateTranslation(_position);
         }
