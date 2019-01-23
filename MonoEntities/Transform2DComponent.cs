@@ -47,7 +47,7 @@ namespace MonoEntities
         /// </summary>
         public Vector2 Position
         {
-            get { return _position; }
+            get => _position;
             set
             {
                 _position = value;
@@ -61,7 +61,7 @@ namespace MonoEntities
         /// </summary>
         public Vector2 Origin
         {
-            get { return _origin; }
+            get => _origin;
             set
             {
                 _origin = value;
@@ -75,7 +75,7 @@ namespace MonoEntities
         /// </summary>
         public float Rotation
         {
-            get { return _rotation; }
+            get => _rotation;
             set
             {
                 _rotation = value;
@@ -86,7 +86,7 @@ namespace MonoEntities
 
         public float RotationDegrees
         {
-            get { return MathHelper.ToDegrees(_rotation); }
+            get => MathHelper.ToDegrees(_rotation);
             set
             {
                 float radians = MathHelper.ToRadians(value);
@@ -257,8 +257,9 @@ namespace MonoEntities
 
         private void RecalculateLocalMatrix(out Matrix2D matrix)
         {
-            matrix = Matrix2D.CreateScale(_scale) * Matrix2D.CreateRotationZ(_rotation) *
-                     Matrix2D.CreateTranslation(_position - (_origin * _scale));
+            matrix = Matrix2D.CreateScale(_scale) * 
+                     Matrix2D.CreateRotationZ(_rotation) *
+                     Matrix2D.CreateTranslation(_position);
         }
 
         public IEnumerator<Transform2DComponent> GetEnumerator()

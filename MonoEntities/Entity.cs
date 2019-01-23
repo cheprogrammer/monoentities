@@ -59,6 +59,11 @@ namespace MonoEntities
             return Service.GetComponent(this, componentType);
         }
 
+        public IEnumerable<Component> GetComponents()
+        {
+            return Service.GetComponents(this);
+        }
+
         public void RemoveComponent<T>() where T : Component, new()
         {
             RemoveComponent(typeof(T));

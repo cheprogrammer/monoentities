@@ -45,12 +45,22 @@ namespace MonoEntities
 
         }
 
+        protected internal virtual void BeforeChildDraw(GameTime gametime)
+        {
+
+        }
+
         protected internal virtual void BeforeDraw(GameTime gametime)
         {
 
         }
 
         protected internal virtual void Draw(GameTime gameTime)
+        {
+
+        }
+
+        protected internal virtual void AfterChildDraw(GameTime gametime)
         {
 
         }
@@ -115,6 +125,11 @@ namespace MonoEntities
         protected internal Component GetComponent(Type componentType)
         {
             return Service.GetComponent(Entity, componentType);
+        }
+
+        protected internal IEnumerable<Component> GetComponents()
+        {
+            return Service.GetComponents(Entity);
         }
 
         protected internal void RemoveComponent<T>() where T : Component, new()

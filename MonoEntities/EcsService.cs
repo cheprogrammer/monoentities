@@ -122,6 +122,18 @@ namespace MonoEntities
             if (!entity.Processable)
                 return;
 
+            // After arr children, draw current entity
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (var i = 0; i < entity.Components.Count; i++)
+            {
+                var entityComponent = entity.Components[i];
+
+                if (entityComponent.Processable)
+                {
+                    entityComponent.BeforeChildDraw(gameTime);
+                }
+            }
+
             // Draw child first
             foreach (EntityNode childNode in node.ChildNodes)
             {
@@ -139,6 +151,7 @@ namespace MonoEntities
 
                 if (entityComponent.Processable)
                 {
+                    entityComponent.AfterChildDraw(gameTime);
                     entityComponent.BeforeDraw(gameTime);
                     entityComponent.Draw(gameTime);
                     entityComponent.AfterDraw(gameTime);
@@ -319,6 +332,11 @@ namespace MonoEntities
             }
 
             return null;
+        }
+
+        internal IEnumerable<Component> GetComponents(Entity entity)
+        {
+            return entity.Components.ToList();
         }
 
         #endregion
